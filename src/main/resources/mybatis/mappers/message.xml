@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+      PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper.message">
+
+	<insert id="sendMessage" parameterType="messageVO">
+		<selectKey keyProperty="messageNO" resultType="int" order="BEFORE">
+	    	select max(messageNO) from h_message
+	    </selectKey>
+		insert into h_message(messageNO, sendId, toId, content)
+		values(#{messageNO}+1, #{sendId}, #{toId}, #{content})
+	</insert>
+	
+	<select id="messageList" resultType="messageVO" parameterType="String">
+		<![CDATA[
+		select * from h_message
+		where sendId=#{id} or toId=#{id}
+		order by writeDate
+		]]>
+	</select>
+	
+	<delete id="deleteMessage" parameterType="int">
+		<![CDATA[
+		delete from h_message
+		where messageNO = #{messageNO}
+		]]>
+	</delete>
+	
+	<update id="deleteSendMessage" parameterType="int">
+		<![CDATA[
+		update h_message set seAva=1
+		where messageNO=#{mesageNO}
+		]]>
+	</update>
+	
+	<update id="deleteReceiveMessage" parameterType="int">
+		<![CDATA[
+		update h_message set reAva=1
+		where messageNO=#{mesageNO}
+		]]>
+	</update>
+	
+	<select id="readMessage" parameterType="int" resultType="messageVO">
+		<![CDATA[
+		select * from h_message
+		where messageNO=#{messageNO}
+		]]>
+	</select>
+	
+	<update id="updateSeRead" parameterType="int">
+		<![CDATA[
+		update h_message
+		set seRead=1
+		where messageNO=#{messageNO}
+		]]>
+	</update>
+	
+	<update id="updateReRead" parameterType="int">
+		<![CDATA[
+		update h_message
+		set reRead=1
+		where messageNO=#{messageNO}
+		]]>
+	</update>
+	
+	<select id="searchMessage" parameterType="java.util.Map" resultType="messageVO">
+		select * from h_message
+		<choose>
+			<when test="category == '받은쪽지'">
+				where toId=#{id} and content like '%' || #{keyword} || '%'
+			</when>
+			<when test="category == '보낸쪽지'">
+				where sendId=#{id} and content like '%' || #{keyword} || '%'
+			</when>
+			<otherwise>
+				where (toId=#{id} or sendId=#{id}) and content like '%' || #{keyword} || '%'
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="unReadCount" parameterType="String" resultType="int">
+		<![CDATA[
+		select count(*)
+		from h_message
+		where reRead=0 and toId=#{id}
+		]]>
+	</select>
+
+</mapper>

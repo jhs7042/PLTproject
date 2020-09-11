@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+      PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper.board">
+
+	<select id="selectAllList" resultType="boardVO">
+		<![CDATA[
+		select * from h_board order by articleNO desc
+		]]>
+	</select>
+	
+	<insert id="insertText" parameterType="boardVO">
+		<selectKey keyProperty="articleNO" resultType="int" order="BEFORE">
+	    	select max(articleNO) from h_board
+	    </selectKey>
+		insert into h_board(articleNO, title, content, id)
+		values(#{articleNO}+1, #{title}, #{content}, #{id})
+	</insert>
+	
+	<select id="viewArticle" resultType="boardVO" parameterType="int">
+		<![CDATA[
+		select * from h_board where articleNO = #{articleNO}
+		]]>
+	</select>
+	
+	<update id="updateArticle" parameterType="boardVO">
+		<![CDATA[
+		update h_board set title=#{title}, content=#{content}, writeDate=sysdate
+		where articleNO=#{articleNO}
+		]]>
+	</update>
+	
+	<delete id="deleteArticle" parameterType="int">
+		<![CDATA[
+		delete from h_board where articleNO = #{articleNO}
+		]]>
+	</delete>
+	
+	<insert id="addComment" parameterType="commentVO">
+		<selectKey keyProperty="coId" resultType="int" order="BEFORE">
+	    	select max(coId) from h_comment
+	    </selectKey>
+		insert into h_comment(coId, boId, content, writer)
+		values(#{coId}+1, #{boId}, #{content}, #{writer})
+	</insert>
+	
+	<select id="commentList" parameterType="int" resultType="commentVO">
+		<![CDATA[
+		select * from h_comment where boId = #{boId}
+		]]>
+	</select>
+	
+</mapper>

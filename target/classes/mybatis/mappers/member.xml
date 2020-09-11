@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+      PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="mapper.member">
+<!-- 
+	<resultMap id="memResult" type="memberVO">
+		<result property="id" column="id" />
+		<result property="pwd" column="pwd" />
+		<result property="name" column="name" />
+		<result property="email" column="email" />
+		<result property="joinDate" column="joinDate" />
+	</resultMap>
+ -->
+	<insert id="addMember" parameterType="memberVO">
+		<![CDATA[
+		insert into h_member(id, pwd, name, email) values(#{id}, #{pwd}, #{name}, #{email})
+		]]>
+	</insert>
+	
+	<update id="updateMember" parameterType="memberVO">
+		<![CDATA[
+		update h_member set pwd=#{pwd}, email=#{email}
+		where id=#{id}
+		]]>
+	</update>
+	
+	<delete id="deleteMember" parameterType="String">
+		<![CDATA[
+		delete from h_member where id=#{id}
+		]]>
+	</delete>
+	
+	<select id="login" resultType="memberVO" parameterType="memberVO">
+		<![CDATA[
+		select * from h_member
+		where id = #{id} and pwd = #{pwd}
+		]]>
+	</select>
+	
+	<select id="selectOneMember" resultType="memberVO" parameterType="String">
+		<![CDATA[
+		select * from h_member
+		where id = #{id}
+		]]>
+	</select>
+
+</mapper>
